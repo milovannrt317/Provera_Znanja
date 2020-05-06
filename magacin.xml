@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Magacin>
+<Artikal>
+  <Naziv sifra="123">Patike</Naziv>
+  <DatumIzarde>
+    <Dan>12</Dan>
+    <Mesec>3</Mesec>
+    <Godina>2019</Godina>
+  </DatumIzarde>
+  <Cena tip="dinar">5000</Cena>
+  <KompanijaProdavca>
+    <ImeKompanije>Nike</ImeKompanije>
+    <Adresa>Vojvode Stepe 283</Adresa>
+  </KompanijaProdavca>
+  <Email tip="sluzbeni">nikepatike@gmail.com</Email>
+</Artikal>
+</Magacin>
