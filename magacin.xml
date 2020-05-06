@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Magacin>
+<!DOCTYPE Magacin SYSTEM "magacin.dtd">
+<Magacin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.w3schools.com magacin.xsd">
 <Artikal>
-  <Naziv sifra="123">Patike</Naziv>
+  <Naziv sifra="pt123">Patike</Naziv>
   <DatumIzarde>
     <Dan>12</Dan>
     <Mesec>3</Mesec>
