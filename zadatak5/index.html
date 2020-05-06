@@ -1,0 +1,209 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <title>Zadatak 5</title>
+    <style>
+        span.nav-link:hover, span.navbar-brand:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <span class="navbar-brand" onclick="pocetna()">Artikli</span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <span class="nav-link" onclick="pocetna()">Pocetna</span>
+            </li>
+            <li class="nav-item">
+              <span class="nav-link" onclick="dodavanje()">Dodavanje nove</span>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link" onclick="izmenaArtikla()">Izmena artikla</span>
+              </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container-fluid" id="podaci">
+
+      </div>
+
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+      <script>
+          const divPodaci=document.querySelector("#podaci");
+          const inpPretraga=document.querySelector("#pretraga");
+          const pattPretraga= new RegExp("\\d+");
+        
+          pocetna()
+          
+          function pocetna() {
+            divPodaci.innerHTML=`<div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="imeKmpInp">Ime kompanije:</label>
+                                        <input type="text" class="form-control" id="imeKmpInp">
+                                    </div>
+                                    <button type="submit" onclick="pocetnaPod()" class="btn btn-primary">Pronadji</button>
+                                    </div>`
+          }
+
+          function pocetnaPod() {
+            imeKmpInp=document.querySelector("#imeKmpInp");
+              $.ajax({
+                url: "/sviartikli",
+                type: "GET",
+                data:{"imeKomp":imeKmpInp.value},
+                success: (response) => { 
+                    let resp=JSON.parse(response)
+                    divPodaci.innerHTML="";
+                    let pod=`<div class="row bg-secondary p-3" style="border: black 1px solid; font-size: 1.2em;">
+                                <div class="col-md-1">ID:</div>
+                                <div class="col-md-3">Naziv:</div>
+                                <div class="col-md-3">Cena:</div>
+                                <div class="col-md-4">Ime kompanije:</div>
+                            </div>`;
+                    resp.forEach(element => {
+                        pod+=`<div class="row py-2 px-3 align-items-center" style="border: black 1px solid">
+                                <div class="col-md-1">${element.id}</div>
+                                <div class="col-md-3">${element.naziv}</div>
+                                <div class="col-md-3">${element.cena}</div>
+                                <div class="col-md-4">${element.imeKomp}</div>
+                                <div class="col-md-1">
+                                <button title="Obrisi osobu" onclick="obrisi(${element.id})"><i class="fas fa-trash-alt"></i></button></div>
+                            </div>`
+                    }); 
+                    divPodaci.innerHTML=pod;
+                }
+              });
+          }
+
+
+          function dodavanje() {
+              divPodaci.innerHTML=`<div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="idInp">ID:</label>
+                                        <input type="text" class="form-control" id="idInp">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nazivInp">Naziv:</label>
+                                        <input type="text" class="form-control" id="nazivInp">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cenaInp">Cena:</label>
+                                        <input type="text" class="form-control" id="cenaInp">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="imeKmpInp">Ime kompanije:</label>
+                                        <input type="text" class="form-control" id="imeKmpInp">
+                                    </div>
+                                    <button type="submit" onclick="dodaj()" class="btn btn-primary">Dodaj</button>
+                                    </div>`
+
+          }
+          
+          function dodaj() {
+              let idInp=document.querySelector("#idInp");
+              let nazivInp=document.querySelector("#nazivInp");
+              let cenaInp=document.querySelector("#cenaInp");
+              let imeKmpInp=document.querySelector("#imeKmpInp");
+
+              if(!pattPretraga.test(idInp.value) | !pattPretraga.test(cenaInp.value))
+              {
+                  alert("Pogresan unos, samo su cifre dozvoljene!");
+                  return;
+              }
+              if(nazivInp.value=="" | imeKmpInp.value=="")
+              {
+                  alert("Pogresan unos, prazna polja!");
+                  return;
+              }
+              $.ajax({
+                url: "/kreirajNovu",
+                type: "POST",
+                data:{"id":parseInt(idInp.value),"naziv":nazivInp.value,"cena":parseInt(cenaInp.value),"imeKomp":imeKmpInp.value},
+                success: (response) => { 
+                    let resp=JSON.parse(response)
+                    alert(resp.poruka)  
+                }
+              });         
+          }
+
+
+          function izmenaArtikla() {
+            divPodaci.innerHTML=`<div class="col-md-5">
+                <div class="form-group">
+                                        <label for="idInp">ID:</label>
+                                        <input type="text" class="form-control" id="idInp">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nazivInp">Naziv:</label>
+                                        <input type="text" class="form-control" id="nazivInp">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cenaInp">Cena:</label>
+                                        <input type="text" class="form-control" id="cenaInp">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="imeKmpInp">Ime kompanije:</label>
+                                        <input type="text" class="form-control" id="imeKmpInp">
+                                    </div>
+                                    <button type="submit" onclick="postaviArtikal()" class="btn btn-primary">Izmeni</button>
+                                    </div>`
+          }
+
+          
+          function postaviArtikal() {
+              let idInp=document.querySelector("#idInp");
+              let nazivInp=document.querySelector("#nazivInp");
+              let cenaInp=document.querySelector("#cenaInp");
+              let imeKmpInp=document.querySelector("#imeKmpInp");
+
+                if(!pattPretraga.test(idInp.value) | !pattPretraga.test(cenaInp.value))
+                {
+                    alert("Pogresan unos, samo su cifre dozvoljene!");
+                    return;
+                }
+                if(nazivInp.value=="" | imeKmpInp.value=="")
+              {
+                  alert("Pogresan unos, prazna polja!");
+                  return;
+              }
+                $.ajax({
+                url: "/postaviArtikal",
+                type: "POST",
+                data:{"id":parseInt(idInp.value),"naziv":nazivInp.value,"cena":parseInt(cenaInp.value),"imeKomp":imeKmpInp.value},
+                success: (response) => { 
+                    let resp=JSON.parse(response)
+                    alert(resp.poruka)  
+                }
+                });       
+          }
+
+
+          function obrisi(id) {
+            $.ajax({
+                url: "/obrisi",
+                type: "POST",
+                data:{"id":id},
+                success: (response) => { 
+                    let resp=JSON.parse(response)
+                    alert(resp.poruka) 
+                    pocetna() 
+                }
+                });
+          }
+      </script>
+</body>
+</html>
